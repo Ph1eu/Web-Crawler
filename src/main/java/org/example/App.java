@@ -1,10 +1,14 @@
 package org.example;
+import org.example.crawler.CrawlResult;
 import org.example.crawler.CrawlerJob;
+import org.example.scheduler.Scheduler;
+import org.example.storage.CrawledUrlStorage;
 import org.example.utils.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Scanner;
+import java.util.concurrent.*;
 
 
 /**
@@ -34,11 +38,12 @@ public class App
             System.out.println("Depth exceeds 5");
             return;
         }
-        CrawlerJob crawlerJob = new CrawlerJob();
-        try {
-            crawlerJob.crawl(url, depth);
-        } catch (Exception e) {
-            logger.error("Error crawling URL: " + url);
-        }
+        CrawlResult initial = new CrawlResult(url,depth);
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        CrawledUrlStorage crawledUrlStorage = new CrawledUrlStorage();
+        Scheduler scheduler = new Scheduler(executorService,crawledUrlStorage);
+        scheduler.addInitialUrl(initial);
+        scheduler.start();
+        executorService.shutdown();
     }
 }
