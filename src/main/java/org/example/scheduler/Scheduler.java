@@ -10,36 +10,61 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
+import static java.lang.Thread.sleep;
+
 public class Scheduler {
-    LinkedBlockingQueue<CrawlResult> queue;
-    ExecutorService executorService;
-    CrawledUrlStorage crawledUrlStorage;
+    private LinkedBlockingQueue<CrawlResult> queue;
+    private ExecutorService executorService;
+    private CrawledUrlStorage crawledUrlStorage;
+    private AtomicInteger depthOneTasks;
+
     private static final Logger logger = LoggerFactory.getLogger(Scheduler.class);
 
     public Scheduler(ExecutorService executorService, CrawledUrlStorage crawledUrlStorage) {
         this.queue = new LinkedBlockingQueue<CrawlResult>();
         this.executorService = executorService;
         this.crawledUrlStorage = crawledUrlStorage;
+        this.depthOneTasks = new AtomicInteger(0);
+
     }
     public void start(){
-
         while(true){
             CrawlResult crawlResult = getUrl();
-
+            if (crawlResult.getDepth() == 1) {
+                depthOneTasks.incrementAndGet();
+                logger.info("Depth one tasks: " + depthOneTasks.get());
+            }
             CrawlerJob crawlerJob = new CrawlerJob(crawlResult, this);
             executorService.submit(crawlerJob);
-            //provide better termination logic here
-            if(executorService.isTerminated()){
+            logger.info("Current queue size: " + queue.size());
+            //provide termination condition when all crawl results depth are 0
+            if (crawlResult.getDepth() == 1) {
+                depthOneTasks.decrementAndGet();
+                logger.info("Depth one tasks: " + depthOneTasks.get());
+            }
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            if (depthOneTasks.get() == 0 && queue.isEmpty() && !executorService.isShutdown() ) {
+                executorService.shutdown();
+                logger.info("Shutting down executor service");
                 break;
             }
 
         }
     }
     public void addInitialUrl(CrawlResult crawlResult){
-        queue.add(crawlResult);
-        logger.info("Added initial URL: " + crawlResult);
+        try{
+        queue.put(crawlResult);
+        logger.info("Added initial URL: " + crawlResult);}
+        catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
     public boolean addUrlToStorage(CrawlResult url){
         if(crawledUrlStorage.isContained(url)){
@@ -62,6 +87,10 @@ public class Scheduler {
     }
 
     public CrawlResult getUrl(){
-        return queue.poll();
+        try {
+            return queue.take();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
