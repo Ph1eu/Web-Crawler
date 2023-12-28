@@ -21,25 +21,35 @@ public class CrawlerJob implements Runnable {
         this.scheduler = scheduler;
     }
     public  void crawl(String url,Integer depth) throws IOException {
-
+        if (depth == 1) {
+            scheduler.incrementDepthOneTasks();
+        }
         Document document = request(url);
-
+        if (depth == 1) {
+            scheduler.decrementDepthOneTasks();
+        }
         Elements links = document.select("a[href]");
         System.out.println("Received web page at " + url);
         System.out.println("Title: " + document.title());
         CrawlResult currentCrawlResult = new CrawlResult(url,depth);
-        if(!scheduler.addUrlToStorage(currentCrawlResult)){
-          logger.info("URL already crawled: " + url);
-          return;
-        };
+        if(scheduler.isContainedInStorage(currentCrawlResult)){
+            logger.info("URL already crawled: " + url);
+            return;
+        }
+        else{
+            scheduler.addUrlToStorage(currentCrawlResult);
+        }
         for (Element link : links) {
             String nextUrl = link.attr("abs:href");
             if(nextUrl == null || nextUrl.isEmpty()){
                 continue;
             }
             CrawlResult childCrawlResult = new CrawlResult(nextUrl,depth-1);
-            if(!scheduler.AddUrlToQueue(childCrawlResult)){
+            if(!scheduler.isUrlMaxDepth(childCrawlResult)){
                 logger.info("Reached maximum depth" );
+            }
+            else{
+                scheduler.AddUrlToQueue(childCrawlResult);
             }
         }
     }

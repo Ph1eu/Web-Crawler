@@ -33,18 +33,9 @@ public class Scheduler {
     public void start(){
         while(true){
             CrawlResult crawlResult = getUrl();
-            if (crawlResult.getDepth() == 1) {
-                depthOneTasks.incrementAndGet();
-                logger.info("Depth one tasks: " + depthOneTasks.get());
-            }
             CrawlerJob crawlerJob = new CrawlerJob(crawlResult, this);
             executorService.submit(crawlerJob);
             logger.info("Current queue size: " + queue.size());
-            //provide termination condition when all crawl results depth are 0
-            if (crawlResult.getDepth() == 1) {
-                depthOneTasks.decrementAndGet();
-                logger.info("Depth one tasks: " + depthOneTasks.get());
-            }
             try {
                 sleep(1000);
             } catch (InterruptedException e) {
@@ -66,24 +57,38 @@ public class Scheduler {
             throw new RuntimeException(e);
         }
     }
-    public boolean addUrlToStorage(CrawlResult url){
-        if(crawledUrlStorage.isContained(url)){
-            logger.info("URL already crawled: " + url);
+
+    public void incrementDepthOneTasks(){
+        depthOneTasks.incrementAndGet();
+        logger.info("Incremented depth one tasks with current value is"+depthOneTasks.get());
+    }
+    public void decrementDepthOneTasks(){
+        depthOneTasks.decrementAndGet();
+        logger.info("Decremented depth one tasks with current value is"+depthOneTasks.get());
+    }
+    public boolean isContainedInStorage(CrawlResult crawlResult){
+        if (crawledUrlStorage.isContained(crawlResult)){
+            return true;
+        }
+        else {
             return false;
         }
+    }
+    public void  addUrlToStorage(CrawlResult url){
         crawledUrlStorage.addResult(url);
         logger.info("Added URL to storage: " + url);
-        return true;
     }
-    public boolean AddUrlToQueue(CrawlResult crawlResult){
-        if(crawlResult.getDepth() > 0){
-            queue.add(crawlResult);
-            logger.info("Added URL to queue: " + crawlResult);
+    public boolean isUrlMaxDepth(CrawlResult crawlResult){
+        if(crawlResult.getDepth() == 0){
             return true;
         }
         else{
             return false;
         }
+    }
+    public void AddUrlToQueue(CrawlResult crawlResult){
+            queue.add(crawlResult);
+            logger.info("Added URL to queue: " + crawlResult);
     }
 
     public CrawlResult getUrl(){
