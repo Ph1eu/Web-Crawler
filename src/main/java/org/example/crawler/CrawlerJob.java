@@ -22,12 +22,9 @@ public class CrawlerJob implements Runnable {
     }
     public  void crawl(String url,Integer depth) throws IOException {
         if (depth == 1) {
-            scheduler.incrementDepthOneTasks();
-        }
-        Document document = request(url);
-        if (depth == 1) {
             scheduler.decrementDepthOneTasks();
         }
+        Document document = request(url);
         Elements links = document.select("a[href]");
         System.out.println("Received web page at " + url);
         System.out.println("Title: " + document.title());
@@ -46,19 +43,20 @@ public class CrawlerJob implements Runnable {
             }
             CrawlResult childCrawlResult = new CrawlResult(nextUrl,depth-1);
             if(!scheduler.isUrlMaxDepth(childCrawlResult)){
-                logger.info("Reached maximum depth" );
-            }
-            else{
                 scheduler.AddUrlToQueue(childCrawlResult);
             }
         }
     }
-     private static Document request(String url) throws IOException {
+     private  Document request(String url) throws IOException {
         Connection connection = Jsoup.connect(url);
+        Connection.Response response = connection.execute();
         Document document = connection.get();
-        if(connection.response().statusCode() == 200){
+        if(response.statusCode() == 200){
             System.out.println("Received web page at " + url);
             System.out.println("Title: " + document.title());
+            int size = response.bodyAsBytes().length;
+            scheduler.incrementTotalDownloadedBytes(size);
+            System.out.println("Size: " + size + " bytes");
             return document;
         } else {
             throw new IOException("HTTP status code: " + connection.response().statusCode());

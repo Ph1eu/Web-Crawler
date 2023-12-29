@@ -20,7 +20,7 @@ public class Scheduler {
     private ExecutorService executorService;
     private CrawledUrlStorage crawledUrlStorage;
     private AtomicInteger depthOneTasks;
-
+    private AtomicInteger totalDownloadedBytes;
     private static final Logger logger = LoggerFactory.getLogger(Scheduler.class);
 
     public Scheduler(ExecutorService executorService, CrawledUrlStorage crawledUrlStorage) {
@@ -28,11 +28,15 @@ public class Scheduler {
         this.executorService = executorService;
         this.crawledUrlStorage = crawledUrlStorage;
         this.depthOneTasks = new AtomicInteger(0);
+        this.totalDownloadedBytes = new AtomicInteger(0);
 
     }
     public void start(){
         while(true){
             CrawlResult crawlResult = getUrl();
+            if (crawlResult.getDepth() == 1) {
+                incrementDepthOneTasks();
+            }
             CrawlerJob crawlerJob = new CrawlerJob(crawlResult, this);
             executorService.submit(crawlerJob);
             logger.info("Current queue size: " + queue.size());
@@ -46,8 +50,9 @@ public class Scheduler {
                 logger.info("Shutting down executor service");
                 break;
             }
-
         }
+        logger.info("Total downloaded bytes: " + totalDownloadedBytes.get());
+        logger.info("Total number of URLs: " + crawledUrlStorage.getSize());
     }
     public void addInitialUrl(CrawlResult crawlResult){
         try{
@@ -57,14 +62,18 @@ public class Scheduler {
             throw new RuntimeException(e);
         }
     }
+    public void incrementTotalDownloadedBytes(Integer bytes){
+        totalDownloadedBytes.addAndGet(bytes);
+        logger.info("Incremented total downloaded bytes with current value is "+totalDownloadedBytes.get());
+    }
 
     public void incrementDepthOneTasks(){
         depthOneTasks.incrementAndGet();
-        logger.info("Incremented depth one tasks with current value is"+depthOneTasks.get());
+        logger.info("Incremented depth one tasks with current value is "+depthOneTasks.get());
     }
     public void decrementDepthOneTasks(){
         depthOneTasks.decrementAndGet();
-        logger.info("Decremented depth one tasks with current value is"+depthOneTasks.get());
+        logger.info("Decremented depth one tasks with current value is "+depthOneTasks.get());
     }
     public boolean isContainedInStorage(CrawlResult crawlResult){
         if (crawledUrlStorage.isContained(crawlResult)){
