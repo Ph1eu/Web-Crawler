@@ -1,4 +1,4 @@
-package org.example.crawler;
+package org.example.model;
 
 
 import java.util.Objects;

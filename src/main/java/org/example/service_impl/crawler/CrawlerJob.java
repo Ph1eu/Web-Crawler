@@ -1,6 +1,7 @@
-package org.example.crawler;
+package org.example.service_impl.crawler;
 
-import org.example.scheduler.Scheduler;
+import org.example.model.CrawlResult;
+import org.example.service_impl.scheduler.Scheduler;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

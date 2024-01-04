@@ -1,12 +1,12 @@
-package org.example.storage;
+package org.example.service_impl.storage;
 
-import org.example.crawler.CrawlResult;
+import org.example.model.CrawlResult;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class CrawledUrlStorage {
-    ConcurrentSkipListSet<CrawlResult> crawledUrls;
+    private ConcurrentSkipListSet<CrawlResult> crawledUrls;
 
     public CrawledUrlStorage() {
         this.crawledUrls = new ConcurrentSkipListSet<CrawlResult>();

@@ -1,17 +1,15 @@
-package org.example.scheduler;
+package org.example.service_impl.scheduler;
 
-import org.example.App;
-import org.example.crawler.CrawlResult;
-import org.example.crawler.CrawlerJob;
-import org.example.storage.CrawledUrlStorage;
+
+import org.example.model.CrawlResult;
+import org.example.service_impl.crawler.CrawlerJob;
+import org.example.service_impl.storage.CrawledUrlStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
 import static java.lang.Thread.sleep;
 
