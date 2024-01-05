@@ -1,5 +1,7 @@
 package org.example.service_impl.crawler;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.example.model.CrawlResult;
 import org.example.service.crawler.AbstractCrawlerJob;
 import org.example.service_impl.crawler_scheduler.CrawlerSchedulerImpl;
@@ -8,15 +10,14 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-@Component
+@Service
 public class BasicCrawlerJobImpl extends AbstractCrawlerJob  {
-    private static final Logger logger = LoggerFactory.getLogger(BasicCrawlerJobImpl.class);
+    private static final Logger logger = LogManager.getLogger(BasicCrawlerJobImpl.class);
     @Autowired
     public BasicCrawlerJobImpl(CrawlerSchedulerImpl crawlerScheduler) {
         super(crawlerScheduler);

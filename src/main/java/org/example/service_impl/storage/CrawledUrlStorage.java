@@ -3,15 +3,16 @@ package org.example.service_impl.storage;
 import org.example.model.CrawlResult;
 import org.example.service.url_storage.IUrlStorage;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentSkipListSet;
-@Component
+@Service
 public class CrawledUrlStorage implements IUrlStorage {
-    private ConcurrentSkipListSet<CrawlResult> crawledUrls;
+    private final ConcurrentSkipListSet<CrawlResult> crawledUrls;
 
     public CrawledUrlStorage() {
-        this.crawledUrls = new ConcurrentSkipListSet<CrawlResult>();
+        this.crawledUrls = new ConcurrentSkipListSet<>();
     }
     @Override
     public boolean isContained(CrawlResult url){

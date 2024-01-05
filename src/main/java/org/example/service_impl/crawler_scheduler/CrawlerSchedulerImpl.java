@@ -6,36 +6,41 @@ import org.example.service.crawler.AbstractCrawlerJob;
 import org.example.service.crawler_scheduler.ICrawlerScheduler;
 import org.example.service_impl.crawler.BasicCrawlerJobImpl;
 import org.example.service_impl.storage.CrawledUrlStorage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
+import org.springframework.stereotype.Service;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Thread.sleep;
-@Component
+@Service
 public class CrawlerSchedulerImpl implements ICrawlerScheduler {
     private final LinkedBlockingQueue<CrawlResult> queue = new LinkedBlockingQueue<>();
-    private final ExecutorService executorService;
+    private ExecutorService executorService ;
     private final CrawledUrlStorage crawledUrlStorage;
     private final AtomicInteger depthOneTasks;
     private final AtomicInteger totalDownloadedBytes ;
     private CountDownLatch latch ;
+    private static final Logger logger = LogManager.getLogger(CrawlerSchedulerImpl.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(CrawlerSchedulerImpl.class);
     @Autowired
-    public CrawlerSchedulerImpl(ExecutorService executorService, CrawledUrlStorage crawledUrlStorage) {
-        this.executorService = executorService;
+    public CrawlerSchedulerImpl( CrawledUrlStorage crawledUrlStorage) {
+        this.executorService = null;
         this.crawledUrlStorage = crawledUrlStorage;
         this.depthOneTasks = new AtomicInteger(0);
         this.totalDownloadedBytes = new AtomicInteger(0);
         this.latch = new CountDownLatch(1);
     }
-
+    public void setThreadsCount(int threadsCount){
+        this.executorService = Executors.newFixedThreadPool(threadsCount);
+    }
     @Override
     public void start() {
         AbstractCrawlerJob crawlerJob = new BasicCrawlerJobImpl( this);
