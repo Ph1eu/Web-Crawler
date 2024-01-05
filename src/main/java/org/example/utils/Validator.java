@@ -2,27 +2,50 @@ package org.example.utils;
 import org.example.App;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Validator {
     private static final Logger logger = LoggerFactory.getLogger(App.class);
 
-    public static Boolean validateUrl(String url){
-        if(url == null ){
+    public static boolean checkIfUrlIsNullOrEmpty(String url){
+        if(url == null || url.isEmpty()){
             logger.error("URL is null");
-            return false;
+            return true;
         }
-        if(!url.startsWith("https://") && !url.startsWith("http://")){
-            logger.error("URL does not start with http:// or https://");
-            return false;
-        }
-        if(url.contains(" ")){
-            logger.error("URL contains illegal characters");
-            return false;
-        }
+        return false;
+    }
+    public static boolean checkIfUrlIsTooLong(String url){
         if(url.length() > 100){
             logger.error("URL exceeds 100 characters");
+            return true;
+        }
+        return false;
+    }
+    public static boolean checkIfUrlStartWithHttpOrHttps(String url){
+        if(!url.startsWith("https://") && !url.startsWith("http://")){
+            logger.error("URL does not start with https:// or https://");
+            return true;
+        }
+        return false;
+    }
+    public static boolean checkIfUrlStartWithIllegalCharacters(String url){
+        if(url.startsWith("https:// ") || url.startsWith("http:// ")){
+            logger.error("URL starts with illegal characters");
+            return true;
+        }
+        return false;
+    }
+    public static boolean validateUrl(String url){
+        if(checkIfUrlIsNullOrEmpty(url)){
             return false;
         }
-        return true;
+        if (checkIfUrlIsTooLong(url)){
+            return false;
+        }
+        if(checkIfUrlStartWithHttpOrHttps(url)){
+            return false;
+        }
+        return !checkIfUrlStartWithIllegalCharacters(url);
     }
 }

@@ -1,13 +1,15 @@
 package org.example.model;
 
 
-import java.util.Objects;
 
+import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 public class CrawlResult implements  Comparable<CrawlResult> {
     private String url;
     private Integer depth;
 
-    public CrawlResult(String url, Integer depth) {
+    public CrawlResult(String url, int depth) {
         this.url = url;
         this.depth = depth;
     }
