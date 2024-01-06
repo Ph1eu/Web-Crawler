@@ -5,11 +5,10 @@ import org.example.model.CrawlResult;
 import org.example.service.crawler.AbstractCrawlerJob;
 import org.example.service.crawler_scheduler.ICrawlerScheduler;
 import org.example.service_impl.crawler.BasicCrawlerJobImpl;
-import org.example.service_impl.storage.CrawledUrlStorage;
+import org.example.service_impl.storage.CrawledUrlStorageImpl;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -19,21 +18,20 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.lang.Thread.sleep;
 @Service
 public class CrawlerSchedulerImpl implements ICrawlerScheduler {
     private final LinkedBlockingQueue<CrawlResult> queue = new LinkedBlockingQueue<>();
     private ExecutorService executorService ;
-    private final CrawledUrlStorage crawledUrlStorage;
+    private final CrawledUrlStorageImpl crawledUrlStorageImpl;
     private final AtomicInteger depthOneTasks;
     private final AtomicInteger totalDownloadedBytes ;
     private CountDownLatch latch ;
     private static final Logger logger = LogManager.getLogger(CrawlerSchedulerImpl.class);
 
     @Autowired
-    public CrawlerSchedulerImpl( CrawledUrlStorage crawledUrlStorage) {
+    public CrawlerSchedulerImpl( CrawledUrlStorageImpl crawledUrlStorageImpl) {
         this.executorService = null;
-        this.crawledUrlStorage = crawledUrlStorage;
+        this.crawledUrlStorageImpl = crawledUrlStorageImpl;
         this.depthOneTasks = new AtomicInteger(0);
         this.totalDownloadedBytes = new AtomicInteger(0);
         this.latch = new CountDownLatch(1);
@@ -43,12 +41,12 @@ public class CrawlerSchedulerImpl implements ICrawlerScheduler {
     }
     @Override
     public void start() {
-        AbstractCrawlerJob crawlerJob = new BasicCrawlerJobImpl( this);
         while (!stop()) {
             CrawlResult crawlResult = getUrl();
             if (crawlResult.getDepth() == 1) {
                 incrementDepthOneTasks();
             }
+            AbstractCrawlerJob crawlerJob = new BasicCrawlerJobImpl( this);
             crawlerJob.setCrawlResult(crawlResult);
             executorService.submit(() -> {
                 try {
@@ -59,14 +57,9 @@ public class CrawlerSchedulerImpl implements ICrawlerScheduler {
             });
             latch = new CountDownLatch((int) latch.getCount() + 1);
             logger.info("Current queue size: " + queue.size());
-//            try {
-//                sleep(1000);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
         }
         logger.info("Total downloaded bytes: " + totalDownloadedBytes.get());
-        logger.info("Total number of URLs: " + crawledUrlStorage.getSize());
+        logger.info("Total number of URLs: " + crawledUrlStorageImpl.getSize());
     }
 
     @Override
@@ -105,10 +98,10 @@ public class CrawlerSchedulerImpl implements ICrawlerScheduler {
         logger.info("Decremented depth one tasks with current value is "+depthOneTasks.get());
     }
     public boolean isContainedInStorage(CrawlResult crawlResult){
-        return crawledUrlStorage.isContained(crawlResult);
+        return crawledUrlStorageImpl.isContained(crawlResult);
     }
     public void  addUrlToStorage(CrawlResult url){
-        crawledUrlStorage.addUrl(url);
+        crawledUrlStorageImpl.addUrl(url);
         logger.info("Added URL to storage: " + url);
     }
     public boolean isUrlMaxDepth(CrawlResult crawlResult){

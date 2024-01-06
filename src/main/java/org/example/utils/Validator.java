@@ -4,10 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-@Component
-public class Validator {
-    private static final Logger logger = LoggerFactory.getLogger(App.class);
 
+public class Validator {
+    private static final Logger logger = LoggerFactory.getLogger(Validator.class);
     public static boolean checkIfUrlIsNullOrEmpty(String url){
         if(url == null || url.isEmpty()){
             logger.error("URL is null");
@@ -29,23 +28,14 @@ public class Validator {
         }
         return false;
     }
-    public static boolean checkIfUrlStartWithIllegalCharacters(String url){
-        if(url.startsWith("https:// ") || url.startsWith("http:// ")){
-            logger.error("URL starts with illegal characters");
+
+    public static boolean validateUrl(String url){
+        if(!checkIfUrlIsNullOrEmpty(url)){
             return true;
         }
-        return false;
-    }
-    public static boolean validateUrl(String url){
-        if(checkIfUrlIsNullOrEmpty(url)){
-            return false;
+        if (!checkIfUrlIsTooLong(url)){
+            return true;
         }
-        if (checkIfUrlIsTooLong(url)){
-            return false;
-        }
-        if(checkIfUrlStartWithHttpOrHttps(url)){
-            return false;
-        }
-        return !checkIfUrlStartWithIllegalCharacters(url);
+        return checkIfUrlStartWithHttpOrHttps(url);
     }
 }

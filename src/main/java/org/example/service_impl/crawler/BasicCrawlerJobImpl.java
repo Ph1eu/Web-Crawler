@@ -62,10 +62,7 @@ public class BasicCrawlerJobImpl extends AbstractCrawlerJob  {
         }
     }
 
-    @Override
-    public void stopCrawling() {
 
-    }
 
     @Override
     public Elements linkExtractor(Document document) {
@@ -86,9 +83,4 @@ public class BasicCrawlerJobImpl extends AbstractCrawlerJob  {
         } else {
             throw new IOException("HTTP status code: " + connection.response().statusCode());
         }    }
-
-    @Override
-    public void parse(Document document) {
-
-    }
 }

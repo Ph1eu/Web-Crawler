@@ -2,16 +2,15 @@ package org.example.service_impl.storage;
 
 import org.example.model.CrawlResult;
 import org.example.service.url_storage.IUrlStorage;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentSkipListSet;
 @Service
-public class CrawledUrlStorage implements IUrlStorage {
+public class CrawledUrlStorageImpl implements IUrlStorage {
     private final ConcurrentSkipListSet<CrawlResult> crawledUrls;
 
-    public CrawledUrlStorage() {
+    public CrawledUrlStorageImpl() {
         this.crawledUrls = new ConcurrentSkipListSet<>();
     }
     @Override
@@ -33,7 +32,7 @@ public class CrawledUrlStorage implements IUrlStorage {
     }
     @Override
     public List<String> getUrls(){
-        List<String> urls = new java.util.ArrayList<String>();
+        List<String> urls = new java.util.ArrayList<>();
         for(CrawlResult crawlResult : crawledUrls){
             urls.add(crawlResult.getUrl());
         }

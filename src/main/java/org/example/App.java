@@ -1,15 +1,7 @@
 package org.example;
 
-import org.example.model.CrawlResult;
-import org.example.service_impl.crawler_scheduler.CrawlerSchedulerImpl;
-import org.example.service_impl.storage.CrawledUrlStorage;
-import org.example.utils.Validator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 
 /**

@@ -2,12 +2,11 @@ package org.example.model;
 
 
 
-import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 public class CrawlResult implements  Comparable<CrawlResult> {
-    private String url;
-    private Integer depth;
+    private final String url;
+    private final int depth;
 
     public CrawlResult(String url, int depth) {
         this.url = url;
@@ -18,16 +17,9 @@ public class CrawlResult implements  Comparable<CrawlResult> {
         return url;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
 
     public Integer getDepth() {
         return depth;
-    }
-
-    public void setDepth(Integer depth) {
-        this.depth = depth;
     }
 
     @Override

@@ -11,9 +11,7 @@ import java.io.IOException;
 public interface ICrawlerJob extends Runnable{
     void setCrawlResult(CrawlResult url);
     void startCrawling();
-    void stopCrawling();
     Elements linkExtractor (Document document);
     Document fetchDocument (String url) throws IOException;
-    void parse (Document document);
 
 }
