@@ -1,8 +1,6 @@
-package org.example.utils;
-import org.example.App;
+package com.webcrawler.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 
 public class Validator {

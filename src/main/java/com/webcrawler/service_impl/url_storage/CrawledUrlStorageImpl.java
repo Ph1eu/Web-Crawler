@@ -1,7 +1,7 @@
-package org.example.service_impl.storage;
+package com.webcrawler.service_impl.url_storage;
 
-import org.example.model.CrawlResult;
-import org.example.service.url_storage.IUrlStorage;
+import com.webcrawler.model.CrawlResult;
+import com.webcrawler.service.url_storage.IUrlStorage;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

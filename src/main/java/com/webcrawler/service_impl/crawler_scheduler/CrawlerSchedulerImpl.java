@@ -1,11 +1,11 @@
-package org.example.service_impl.crawler_scheduler;
+package com.webcrawler.service_impl.crawler_scheduler;
 
 
-import org.example.model.CrawlResult;
-import org.example.service.crawler.AbstractCrawlerJob;
-import org.example.service.crawler_scheduler.ICrawlerScheduler;
-import org.example.service_impl.crawler.BasicCrawlerJobImpl;
-import org.example.service_impl.storage.CrawledUrlStorageImpl;
+import com.webcrawler.model.CrawlResult;
+import com.webcrawler.service.crawler.AbstractCrawlerJob;
+import com.webcrawler.service.crawler_scheduler.ICrawlerScheduler;
+import com.webcrawler.service_impl.url_storage.CrawledUrlStorageImpl;
+import com.webcrawler.service_impl.crawler.BasicCrawlerJobImpl;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

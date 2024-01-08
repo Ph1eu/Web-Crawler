@@ -1,11 +1,10 @@
-package org.example.commands;
+package com.webcrawler.commands;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.example.model.CrawlResult;
-import org.example.service_impl.crawler.BasicCrawlerJobImpl;
-import org.example.service_impl.crawler_scheduler.CrawlerSchedulerImpl;
-import org.example.utils.Validator;
+import com.webcrawler.model.CrawlResult;
+import com.webcrawler.service_impl.crawler_scheduler.CrawlerSchedulerImpl;
+import com.webcrawler.utils.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -22,7 +21,7 @@ public class CrawlCommand {
     }
 
     @ShellMethod(key = "crawl", value = "Crawl a website")
-    public void crawl(@ShellOption String url, @ShellOption(defaultValue = "2") int depth, @ShellOption(defaultValue = "1") int threads_count) throws Exception{
+    public void crawl(@ShellOption String url, @ShellOption(defaultValue = "2") int depth, @ShellOption(defaultValue = "1") int threads_count) {
         if(Validator.validateUrl(url)){
             logger.error("Invalid URL");
         }

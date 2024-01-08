@@ -1,4 +1,4 @@
-package org.example.model;
+package com.webcrawler.model;
 
 
 

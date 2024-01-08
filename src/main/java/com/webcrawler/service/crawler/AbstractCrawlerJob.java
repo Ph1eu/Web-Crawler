@@ -1,7 +1,7 @@
-package org.example.service.crawler;
+package com.webcrawler.service.crawler;
 
-import org.example.model.CrawlResult;
-import org.example.service_impl.crawler_scheduler.CrawlerSchedulerImpl;
+import com.webcrawler.model.CrawlResult;
+import com.webcrawler.service_impl.crawler_scheduler.CrawlerSchedulerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

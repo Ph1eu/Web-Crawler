@@ -1,10 +1,10 @@
-package org.example.service_impl.crawler;
+package com.webcrawler.service_impl.crawler;
 
+import com.webcrawler.model.CrawlResult;
+import com.webcrawler.service.crawler.AbstractCrawlerJob;
+import com.webcrawler.service_impl.crawler_scheduler.CrawlerSchedulerImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.example.model.CrawlResult;
-import org.example.service.crawler.AbstractCrawlerJob;
-import org.example.service_impl.crawler_scheduler.CrawlerSchedulerImpl;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 @Service
-public class BasicCrawlerJobImpl extends AbstractCrawlerJob  {
+public class BasicCrawlerJobImpl extends AbstractCrawlerJob {
     private static final Logger logger = LogManager.getLogger(BasicCrawlerJobImpl.class);
     @Autowired
     public BasicCrawlerJobImpl(CrawlerSchedulerImpl crawlerScheduler) {

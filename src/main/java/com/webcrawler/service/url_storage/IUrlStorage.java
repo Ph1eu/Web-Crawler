@@ -1,6 +1,6 @@
-package org.example.service.url_storage;
+package com.webcrawler.service.url_storage;
 
-import org.example.model.CrawlResult;
+import com.webcrawler.model.CrawlResult;
 
 import java.util.List;
 

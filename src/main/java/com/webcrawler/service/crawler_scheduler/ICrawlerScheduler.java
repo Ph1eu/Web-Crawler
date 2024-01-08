@@ -1,4 +1,4 @@
-package org.example.service.crawler_scheduler;
+package com.webcrawler.service.crawler_scheduler;
 
 import org.springframework.stereotype.Component;
 

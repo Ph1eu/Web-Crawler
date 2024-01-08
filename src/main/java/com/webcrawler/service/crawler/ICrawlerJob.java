@@ -1,6 +1,6 @@
-package org.example.service.crawler;
+package com.webcrawler.service.crawler;
 
-import org.example.model.CrawlResult;
+import com.webcrawler.model.CrawlResult;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
