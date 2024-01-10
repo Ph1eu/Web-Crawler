@@ -2,7 +2,6 @@ package com.webcrawler.service_impl.crawler_scheduler;
 
 
 import com.webcrawler.model.CrawlResult;
-import com.webcrawler.service.crawler.AbstractCrawlerJob;
 import com.webcrawler.service.crawler_scheduler.ICrawlerScheduler;
 import com.webcrawler.service_impl.url_storage.CrawledUrlStorageImpl;
 import com.webcrawler.service_impl.crawler.BasicCrawlerJobImpl;
@@ -12,68 +11,70 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
+
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static java.lang.Thread.sleep;
 
 @Service
 public class CrawlerSchedulerImpl implements ICrawlerScheduler {
+    private int Threads_count = 1;
     private final LinkedBlockingQueue<CrawlResult> queue = new LinkedBlockingQueue<>();
     private ExecutorService executorService ;
     private final CrawledUrlStorageImpl crawledUrlStorageImpl;
     private final AtomicInteger depthOneTasks;
     private final AtomicInteger totalDownloadedBytes ;
-    private CountDownLatch latch ;
+    private boolean stop = false;
     private static final Logger logger = LogManager.getLogger(CrawlerSchedulerImpl.class);
 
     @Autowired
     public CrawlerSchedulerImpl( CrawledUrlStorageImpl crawledUrlStorageImpl) {
-        this.executorService = null;
         this.crawledUrlStorageImpl = crawledUrlStorageImpl;
         this.depthOneTasks = new AtomicInteger(0);
         this.totalDownloadedBytes = new AtomicInteger(0);
-        this.latch = new CountDownLatch(1);
     }
     public void setThreadsCount(int threadsCount){
-        this.executorService = Executors.newFixedThreadPool(threadsCount);
+        this.Threads_count = threadsCount;
     }
     @Override
     public void start() {
-        while (!stop()) {
-            CrawlResult crawlResult = getUrl();
-            if (crawlResult.getDepth() == 1) {
-                incrementDepthOneTasks();
-            }
-            AbstractCrawlerJob crawlerJob = new BasicCrawlerJobImpl( this);
-            crawlerJob.setCrawlResult(crawlResult);
-            executorService.submit(() -> {
-                try {
-                    crawlerJob.run();
-                } finally {
-                    latch.countDown();
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
+        this.executorService = Executors.newFixedThreadPool(Threads_count);
+        scheduler.scheduleAtFixedRate(() -> {
+            if (!stop) {
+                CrawlResult crawlResult = getUrl();
+                if (crawlResult.getDepth() == 1) {
+                    incrementDepthOneTasks();
                 }
-            });
-            latch = new CountDownLatch((int) latch.getCount() + 1);
-            logger.info("Current queue size: " + queue.size());
-        }
-        logger.info("Total downloaded bytes: " + totalDownloadedBytes.get());
-        logger.info("Total number of URLs: " + crawledUrlStorageImpl.getSize());
-    }
-
-    @Override
-    public boolean stop() {
-        if (depthOneTasks.get() == 0 && queue.isEmpty() && !executorService.isShutdown()) {
-            try {
-                latch.await(); // wait for all tasks to finish
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                BasicCrawlerJobImpl crawlerJob = new BasicCrawlerJobImpl(this);
+                crawlerJob.setCrawlResult(crawlResult);
+                logger.info("Current queue size: " + queue.size());
+                executorService.submit(()->{
+                    try {
+                        crawlerJob.run();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                }
+                });
+            }}, 0, 1, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(() -> {
+                stop();
+                if(stop && executorService.isTerminated()){
+                    logger.info("Total downloaded bytes: " + totalDownloadedBytes.get());
+                    logger.info("Total number of URLs: " + crawledUrlStorageImpl.getSize());
+                    scheduler.shutdown();
+                }
             }
+            , 2, 3, TimeUnit.SECONDS);
+    }
+    @Override
+    public void stop() {
+        if (depthOneTasks.get() == 0 && queue.isEmpty() && !executorService.isShutdown()) {
             executorService.shutdown();
             logger.info("Shutting down executor service");
+            stop = true;
         }
-        return executorService.isShutdown();
     }
 
     public void addInitialUrl(CrawlResult crawlResult){
@@ -118,5 +119,6 @@ public class CrawlerSchedulerImpl implements ICrawlerScheduler {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
     }
 }

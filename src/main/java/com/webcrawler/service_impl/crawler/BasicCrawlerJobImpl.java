@@ -83,4 +83,11 @@ public class BasicCrawlerJobImpl extends AbstractCrawlerJob {
         } else {
             throw new IOException("HTTP status code: " + connection.response().statusCode());
         }    }
+
+    @Override
+    public String toString() {
+        return "BasicCrawlerJobImpl{" +
+                "crawlResult=" + crawlResult +
+                '}';
+    }
 }

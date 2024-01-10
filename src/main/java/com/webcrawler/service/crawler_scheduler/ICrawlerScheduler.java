@@ -5,5 +5,5 @@ import org.springframework.stereotype.Component;
 @Component
 public interface ICrawlerScheduler {
     void start();
-    boolean stop();
+    void stop();
 }

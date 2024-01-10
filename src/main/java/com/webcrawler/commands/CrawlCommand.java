@@ -10,6 +10,8 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
+import static java.lang.Thread.sleep;
+
 @ShellComponent
 public class CrawlCommand {
     private final CrawlerSchedulerImpl crawlerScheduler;
@@ -22,16 +24,9 @@ public class CrawlCommand {
 
     @ShellMethod(key = "crawl", value = "Crawl a website")
     public void crawl(@ShellOption String url, @ShellOption(defaultValue = "2") int depth, @ShellOption(defaultValue = "1") int threads_count) {
-        if(Validator.validateUrl(url)){
-            logger.error("Invalid URL");
-        }
-        else{
-            logger.info("Valid URL");
             CrawlResult initial = new CrawlResult(url, depth);
             crawlerScheduler.setThreadsCount(threads_count);
             crawlerScheduler.addInitialUrl(initial);
             crawlerScheduler.start();
-        }
-
     }
 }
