@@ -21,22 +21,28 @@ public class CrawlCommand {
     }
 
     @ShellMethod(key = "crawl", value = "Crawl a website")
-    public void crawl(@ShellOption String url, @ShellOption(defaultValue = "2") int depth, @ShellOption(defaultValue = "1") int threads_count) {
-        if (!UrlValidator.validateUrl(url)) {
-            logger.error("Invalid URL: " + url);
-            throw new IllegalArgumentException("Invalid URL: " + url);
-        }
-        if (depth <= 0) {
-            logger.error("Depth must be greater than 0");
-            throw new IllegalArgumentException("Depth must be greater than 0");
-        }
-        if (threads_count <= 0) {
-            logger.error("Threads count must be greater than 0");
-            throw new IllegalArgumentException("Threads count must be greater than 0");
-        }
+    public void crawl(@ShellOption String url, @ShellOption(defaultValue = "2",help = "depth level for crawling") int depth, @ShellOption(defaultValue = "1",help = "Number of threads for crawling") int threads_count) {
+            validateInputs(url, depth, threads_count);
             CrawlResult initial = new CrawlResult(url, depth);
             crawlerScheduler.setThreadsCount(threads_count);
             crawlerScheduler.addInitialUrl(initial);
             crawlerScheduler.start();
+    }
+    private void validateInputs(String url, int depth, int threads_count) {
+        if (!UrlValidator.validateUrl(url)) {
+            String errorMessage = String.format("Invalid URL: %s", url);
+            logger.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
+        if (depth <= 0) {
+            String errorMessage = "Depth must be greater than 0";
+            logger.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
+        if (threads_count <= 0) {
+            String errorMessage = "Threads count must be greater than 0";
+            logger.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
+        }
     }
 }
