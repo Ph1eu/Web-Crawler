@@ -15,7 +15,6 @@ import org.apache.logging.log4j.LogManager;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.lang.Thread.sleep;
 
 @Service
 public class CrawlerSchedulerImpl implements ICrawlerScheduler {
