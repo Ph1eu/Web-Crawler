@@ -5,6 +5,11 @@ import com.webcrawler.service.url_storage.IUrlStorage;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ConcurrentSkipListSet;
+
+/**
+ * This class implements the IUrlStorage interface and provides a thread-safe storage for crawled URLs.
+ * It uses a ConcurrentSkipListSet to store the URLs, ensuring that the URLs are sorted and duplicate URLs are not stored.
+ */
 @Service
 public class CrawledUrlStorageImpl implements IUrlStorage {
     private final ConcurrentSkipListSet<CrawlResult> crawledUrls;
@@ -16,7 +21,6 @@ public class CrawledUrlStorageImpl implements IUrlStorage {
     public boolean isContained(CrawlResult url){
         return crawledUrls.contains(url);
     }
-
     @Override
     public void addUrl(CrawlResult url) {
         crawledUrls.add(url);

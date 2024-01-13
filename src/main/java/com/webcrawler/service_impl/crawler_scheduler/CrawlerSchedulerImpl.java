@@ -15,7 +15,12 @@ import org.apache.logging.log4j.LogManager;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
+/**
+ * The CrawlerSchedulerImpl class oversees and executes web crawl tasks, implementing the ICrawlerScheduler interface.
+ * It uses a thread-safe LinkedBlockingQueue for task management and CrawledUrlStorageImpl to prevent duplicate crawling.
+ * The class includes crucial fields like thread count and flags, offering methods for starting, stopping crawling,
+ * adding URLs, managing tasks, and checking storage.
+ */
 @Service
 public class CrawlerSchedulerImpl implements ICrawlerScheduler {
     private int Threads_count = 1;
@@ -36,6 +41,11 @@ public class CrawlerSchedulerImpl implements ICrawlerScheduler {
     public void setThreadsCount(int threadsCount){
         this.Threads_count = threadsCount;
     }
+    /**
+     * Starts the crawling process by scheduling two tasks.
+     * The first task retrieves a CrawlResult and submits a new BasicCrawlerJobImpl for execution.
+     * The second task stops the process if there are no more depth one tasks and the queue is empty, then logs the results.
+     */
     @Override
     public void start() {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
