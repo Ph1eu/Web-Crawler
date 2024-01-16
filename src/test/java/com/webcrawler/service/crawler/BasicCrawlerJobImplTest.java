@@ -32,7 +32,7 @@ public class BasicCrawlerJobImplTest {
 
         @Test
         @DisplayName("When startCrawling is called, the URL should be added to the storage")
-        public void testStartCrawling() {
+        void shouldExecuteTheMethod() {
             String url = "http://example.com";
             int depth = 2;
             CrawlResult initial = new CrawlResult(url, depth);

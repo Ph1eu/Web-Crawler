@@ -1,38 +1,18 @@
 package com.webcrawler;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import com.webcrawler.service.crawler.BasicCrawlerJobImplTest;
+import com.webcrawler.service.crawler_scheduler.CrawlerSchedulerImplTest;
+import com.webcrawler.service.url_storage.CrawledUrlStorageImplTest;
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.platform.suite.api.SelectClasses;
+import org.junit.runner.RunWith;
 
-/**
- * Unit test for simple App.
- */
-public class AppTest 
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppTest( String testName )
-    {
-        super( testName );
-    }
+@RunWith(JUnitPlatform.class)
+@SelectClasses({
+        BasicCrawlerJobImplTest.class,
+        CrawlerSchedulerImplTest.class,
+        CrawledUrlStorageImplTest.class
+})
+public class AppTest {
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
-    }
-
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
-    }
 }

@@ -11,7 +11,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 public class CrawlerSchedulerImplTest {
 
@@ -26,5 +28,15 @@ public class CrawlerSchedulerImplTest {
         MockitoAnnotations.openMocks(this);
     }
 
-
+    @Nested
+    @DisplayName("Test addInitialUrl method")
+    class AddInitialUrlTest {
+        @Test
+        @DisplayName("When adding an initial URL, it should be in the queue")
+        void shouldAddInitialUrlToQueue() {
+            CrawlResult crawlResult = new CrawlResult("http://example.com", 1);
+            crawlerScheduler.addInitialUrl(crawlResult);
+            assertSame(crawlerScheduler.getUrl(), crawlResult);
+        }
+    }
 }

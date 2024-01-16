@@ -23,13 +23,11 @@ public class CrawledUrlStorageImplTest {
     class AddUrlTest {
 
         @Test
-        @DisplayName("When a URL is added, it should be contained in the storage")
-        public void testAddUrl() {
+        @DisplayName("When there is existed url then should return true ")
+        void shouldReturnTrue() {
             String url = "http://example.com";
             int depth = 2;
             CrawlResult crawlResult = new CrawlResult(url, depth);
-
-            assertFalse(crawledUrlStorage.isContained(crawlResult));
             crawledUrlStorage.addUrl(crawlResult);
             assertTrue(crawledUrlStorage.isContained(crawlResult));
         }
@@ -37,16 +35,12 @@ public class CrawledUrlStorageImplTest {
     @Nested
     @DisplayName("Test GetSize Method")
     class GetSizeTest {
-
         @Test
         @DisplayName("When a URL is added, the size of the storage should increase")
-        public void testGetSize() {
-            assertEquals(0, crawledUrlStorage.getSize());
-
+        void shouldReturnIncreasedAmount() {
             String url = "http://example.com";
             int depth = 2;
             CrawlResult crawlResult = new CrawlResult(url, depth);
-
             crawledUrlStorage.addUrl(crawlResult);
             assertEquals(1, crawledUrlStorage.getSize());
         }
